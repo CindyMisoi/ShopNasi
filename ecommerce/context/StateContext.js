@@ -11,6 +11,10 @@ export const StateContext = ({ children }) => {
   const [totalQuantities, setTotalQuantities] = useState(0);
   const [qty, setQty] = useState(1);
 
+   // product and index of the product we want to update in our cart
+     let foundProduct;
+     let index;
+
   // dynamic add to cart function
   const onAdd = (product, quantity) => {
     const checkProductInCart = cartItems.find(
@@ -43,6 +47,40 @@ export const StateContext = ({ children }) => {
 
     toast.success(`${qty} ${product.name} added to the cart.`);
   };
+  //   Remove item from cart
+  const onRemove = (product) => {
+    // product to update
+    foundProduct = cartItems.find((item) => item._id === product._id);
+    const newCartItems = cartItems.filter((item) => item._id !== product._id)
+
+    // update state => total price, total quantity
+    setTotalPrice((prevTotalPrice) => prevTotalPrice - foundProduct.price * foundProduct.quantity);
+    setTotalQuantities((prevTotalQuantities) => prevTotalQuantities - foundProduct.quantity);
+    setCartItems(newCartItems);
+  }
+
+  //   quantity update for our cart items
+  const toggleCartItemQuantity = (id, value) => {
+       foundProduct = cartItems.find((item) => item._id === id);
+       index = cartItems.findIndex((product) => product._id === id);
+       const newCartItems = cartItems.filter((item) => item._id !== id);
+    //    incrementing and decrementing
+    if(value === "inc"){
+    //    update state of the cart items
+       setCartItems([...newCartItems, {...foundProduct, quantity: foundProduct.quantity + 1} ]) 
+       setTotalPrice((prevTotalPrice) => prevTotalPrice + foundProduct.price);
+       setTotalQuantities((prevTotalQuantities) => prevTotalQuantities + 1);
+    }
+
+    else if(value === "dec"){
+     if(foundProduct.quantity > 1){
+    //    update state of the cart items
+       setCartItems([...newCartItems, {...foundProduct, quantity: foundProduct.quantity - 1} ]) 
+       setTotalPrice((prevTotalPrice) => prevTotalPrice - foundProduct.price);
+       setTotalQuantities((prevTotalQuantities) => prevTotalQuantities - 1);
+     }
+    }
+  }
 
   //  dynamic qty update function
   const incQty = () => {
@@ -60,6 +98,7 @@ export const StateContext = ({ children }) => {
     <Context.Provider
       value={{
         showCart,
+        setShowCart,
         cartItems,
         totalPrice,
         totalQuantities,
@@ -67,6 +106,8 @@ export const StateContext = ({ children }) => {
         decQty,
         onAdd,
         qty,
+        toggleCartItemQuantity,
+        onRemove
       }}
     >
       {children}
