@@ -14,11 +14,25 @@ const Cart = () => {
   const {totalPrice, totalQuantities, cartItems, setShowCart,toggleCartItemQuantity, onRemove } = useStateContext();
 
   // pay with stripe
-  const handleCheckout = () => {
-    //  const stripe = await getStripe();
-    //  const response = await fetch('/api/stripe', {
+  const handleCheckout = async () => {
+     const stripe = await getStripe();
+     const response = await fetch('/api/stripe', {
+      method: 'POST',
+      headers: {
+         Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cartItems)
+     })
 
-    //  })
+     if (response.statusCode === 500) return;
+     const data = await response.json();
+
+    //  redirect to the checkout
+    toast.loading('Redirecting');
+    // call stripe instance
+    stripe.redirectToCheckout({sessionId: data.id})
+
   }
   return (
     <div className='cart-wrapper' ref= {cartRef}>
