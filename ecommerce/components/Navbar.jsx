@@ -3,6 +3,7 @@ import Link from 'next/link'
 import {AiOutlineShopping} from 'react-icons/ai'
 import Cart from './Cart'
 import { useStateContext } from '../context/StateContext'
+import {FaShopify} from 'react-icons/fa';
 
 
 const Navbar = () => {
@@ -10,7 +11,12 @@ const Navbar = () => {
   return (
     <div className='navbar-container'>
       <p className='logo'>
-        <Link href='/'>JSM Headphones</Link>
+        <Link href='/'>
+          <span>
+            <FaShopify/>
+            ShopNasi Store
+          </span>
+          </Link>
       </p>
       <button type='button' className='cart-icon' onClick= {() => setShowCart(true)}>
         <AiOutlineShopping/>
